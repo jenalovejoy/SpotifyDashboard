@@ -1,0 +1,74 @@
+body {
+    display: flex;
+    justify-content: center;
+}
+#container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    width: 85%;
+    
+}
+
+.track {
+    width: 300px;
+    height: 300px;
+    text-align: center;
+    color: black;
+    font-size: 16px;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    border: 2px, lightgrey;
+    padding: 10px;
+
+}
+
+table, th, td {
+    border: none;
+    
+}
+
+#artistFreqBarGraph {
+    width: 300px;
+}
+
+.barGraphData {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: flex-end;
+
+}
+
+.barGraphColumn {
+    display: flex;
+    flex-direction: column;
+}
+
+.label {
+    transform: rotate(270deg);
+    float: left;
+    flex-direction: column;
+    font-size: 8px;
+    white-space: nowrap;
+    height: 50px;
+    width: 50px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    text-align: center;
+}
+
+.barGraph {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #e4e9f2;
+    width: 500px;
+    background-color: white;
+    padding: 10px;
+    margin: 10px;
+}
+
+.barGraphTitle {
+    text-align: center;
+}
