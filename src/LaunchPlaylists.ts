@@ -12,7 +12,12 @@ $(document).ready(async() => {
         let playlistName = allPlaylistData.items[i].name;
         let playlistID = allPlaylistData.items[i].id;
         let playlistImageURL = await Api.getPlaylistImage(playlistID);
-        let playlistCard = `<a href=\"./playlistDash/${playlistID}\"><img class=\"playlistCard\" src=\"${playlistImageURL}\"></a>`
+        let playlistCard = `<div class="playlistCard">
+                            <a href=\"./playlistDash/${playlistID}\">
+                            <img class=\"playlistImage\" src=\"${playlistImageURL}\" title="${playlistName}">
+                            <div class="playlistText">${playlistName}</div>
+                            </a>
+                            </div>`
         
         $("#playlists").append($(playlistCard));
     }

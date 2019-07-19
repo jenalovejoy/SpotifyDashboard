@@ -5,12 +5,11 @@ const MS_IN_SEC = 1000;
 
 export function findArtistFrequency(allTrackData: any): StringMap<number>{
     let individualArtistFreq = {}
-    let numberArtistsFreq = {}
 
-    let size = allTrackData.items.length;
+    let size = allTrackData.length;
 
     for (let i = 0; i < size; i++){
-        for (let a of allTrackData.items[i].track.artists){
+        for (let a of allTrackData[i].track.artists){
             let name = a.name;
             if (!(name in individualArtistFreq)){
                 individualArtistFreq[name] = 1;
@@ -26,11 +25,11 @@ export function findArtistFrequency(allTrackData: any): StringMap<number>{
 export function findNumArtistsPerTrackFrequency(allTrackData: any): StringMap<number>{
     let numberArtistsFreq = {}
 
-    let size = allTrackData.items.length;
+    let size = allTrackData.length;
 
     for (let i = 0; i < size; i++){
         let numTrackArtists = 0;
-        for (let a of allTrackData.items[i].track.artists){
+        for (let a of allTrackData[i].track.artists){
             numTrackArtists++;
         }
         if (!(numTrackArtists in numberArtistsFreq)){
@@ -46,10 +45,10 @@ export function findNumArtistsPerTrackFrequency(allTrackData: any): StringMap<nu
 export function findSongDurationFrequency(allTrackData: any, compressFactor: number): StringMap<number>{
 
     let songDuration = {};
-    let size = allTrackData.items.length;
+    let size = allTrackData.length;
 
     for (let i = 0; i < size; i++){
-        let d: number= allTrackData.items[i].track.duration_ms;
+        let d: number= allTrackData[i].track.duration_ms;
         let durationSeconds = (d / MS_IN_SEC);
         durationSeconds = compressTimes(durationSeconds, compressFactor);
 

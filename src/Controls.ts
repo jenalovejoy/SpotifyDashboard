@@ -3,6 +3,11 @@ import {BarElement} from "./BarElement"
 
 type StringMap<T> = {[key: string]: T};
 
+export function postHeader(container: string, title: string, description: string): void{
+    let headerDiv = `<div id="title">${title}</div><div id="subtitle">${description}</div>`
+    $("#header").append(headerDiv);
+}
+
 export function makeBarGraph(container: string, data: StringMap<number>, options: Options): void{
 
     let name = options["name"];

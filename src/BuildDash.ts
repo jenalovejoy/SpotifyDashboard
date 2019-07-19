@@ -15,9 +15,15 @@ $(document).ready(async(): Promise<any> => {
 
     Api.getToken();
     Api.getSelectedPlaylist();
+    let allTrackData = await Api.getPlaylistTracks();
 
     // Get all data for a particular playlist
-    const allTrackData = await Api.getTracks();
+    const allPlaylistData = await Api.getPlaylist();
+
+    const playlistName = allPlaylistData.name;
+    const playlistDescription = allPlaylistData.description;
+
+    Controls.postHeader("#header", playlistName, playlistDescription);
 
     // Defines graph preferences
     let artistFreqOptions: Options = {
@@ -51,7 +57,6 @@ $(document).ready(async(): Promise<any> => {
     let songDuration10 = Calculate.findSongDurationFrequency(allTrackData, 10);
     let songDuration5 = Calculate.findSongDurationFrequency(allTrackData, 5);
     let songDuration3 = Calculate.findSongDurationFrequency(allTrackData, 3);
-
 
     Controls.makeBarGraph("#container", artistFreq, artistFreqOptions); // renders graph
     

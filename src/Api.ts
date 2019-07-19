@@ -17,10 +17,11 @@ export function getToken(): void{
 
 }
 
-export async function getSelectedPlaylist(): void{
+export async function getSelectedPlaylist(): Promise<any> {
     let playlistIDFormat = new RegExp("playlistDash.(.*)")
     selectedPlaylist = playlistIDFormat.exec(window.location.pathname)[1];
 }
+
 
 export async function makeCall(url: string): Promise<any> {
     const data = await $.ajax({
@@ -36,7 +37,6 @@ export async function makeCall(url: string): Promise<any> {
     return data;
 }
 
-
 export async function getPlaylistIDs(): Promise<any> {
     return await makeCall(myPlaylistsURL);
 }
@@ -47,9 +47,28 @@ export async function getPlaylistImage(playlistID:string): Promise<any>{
     return data[0] && data[0].url;
 }
 
-export async function getTracks(): Promise<any>{
-    // https://api.spotify.com/v1/playlists/{playlist_id}/tracks
-    let url = playlistsURL + selectedPlaylist + "/tracks"
+export async function getPlaylist(): Promise<any>{
+    let url = playlistsURL + selectedPlaylist 
     return await makeCall(url);
 }
 
+export async function getPlaylistTracks(): Promise<any> {
+    let startUrl = playlistsURL + selectedPlaylist + "/tracks";
+
+    let data = await makeCall(startUrl);
+    let tracks = data.items;
+    let nextPage = data.next;
+    while(nextPage) {
+        let url = startUrl + getURL(nextPage);
+        data = await makeCall(url);
+        tracks = tracks.concat(data.items);
+        nextPage = data.next;
+    }
+    return tracks;
+}
+
+function getURL(intialURL: string): string{
+    var urlFormat = new RegExp("/tracks(.*)");
+    return urlFormat.exec(intialURL)[1]
+
+}
