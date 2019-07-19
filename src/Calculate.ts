@@ -1,36 +1,55 @@
 type StringMap<T> = {[key: string]: T};
 
-const MS_IN_MIN:number = 60000;
-const MS_IN_SEC:number = 1000;
+const MS_IN_MIN = 60000;
+const MS_IN_SEC = 1000;
 
-export function findArtistFrequency(allTrackData:any):StringMap<number>{
-    let artistCounts = {}
+export function findArtistFrequency(allTrackData: any): StringMap<number>{
+    let individualArtistFreq = {}
+    let numberArtistsFreq = {}
 
-    let size = allTrackData.total;
-    let totalInstances = 0;
+    let size = allTrackData.items.length;
 
     for (let i = 0; i < size; i++){
         for (let a of allTrackData.items[i].track.artists){
             let name = a.name;
-            if (!(name in artistCounts)){
-                artistCounts[name] = 1;
+            if (!(name in individualArtistFreq)){
+                individualArtistFreq[name] = 1;
             } else {
-                let count = artistCounts[name] + 1;
-                artistCounts[name] = count;
+                let count = individualArtistFreq[name] + 1;
+                individualArtistFreq[name] = count;
             }
-            totalInstances++;
         }
     }
-    return artistCounts;
+    return individualArtistFreq;
 }
 
-export function findSongDurationFrequency(allTrackData:any, compressFactor:number):StringMap<number>{
+export function findNumArtistsPerTrackFrequency(allTrackData: any): StringMap<number>{
+    let numberArtistsFreq = {}
 
-    let songDuration = {};
-    let size = allTrackData.total;
+    let size = allTrackData.items.length;
 
     for (let i = 0; i < size; i++){
-        let d:number= allTrackData.items[i].track.duration_ms;
+        let numTrackArtists = 0;
+        for (let a of allTrackData.items[i].track.artists){
+            numTrackArtists++;
+        }
+        if (!(numTrackArtists in numberArtistsFreq)){
+            numberArtistsFreq[numTrackArtists] = 1;
+        } else {
+            let count = numberArtistsFreq[numTrackArtists] + 1;
+            numberArtistsFreq[numTrackArtists] = count;
+        }
+    }
+    return numberArtistsFreq;
+}
+
+export function findSongDurationFrequency(allTrackData: any, compressFactor: number): StringMap<number>{
+
+    let songDuration = {};
+    let size = allTrackData.items.length;
+
+    for (let i = 0; i < size; i++){
+        let d: number= allTrackData.items[i].track.duration_ms;
         let durationSeconds = (d / MS_IN_SEC);
         durationSeconds = compressTimes(durationSeconds, compressFactor);
 
@@ -42,24 +61,24 @@ export function findSongDurationFrequency(allTrackData:any, compressFactor:numbe
         }
     
     }
-
     return adjustTimeLabels(songDuration, compressFactor);
 }
 
-function compressTimes(time:number, compressFactor:number):number{ 
+function compressTimes(time: number, compressFactor: number): number{ 
 
     // force factor of 60
     compressFactor = factorOf60(compressFactor);
 
     // compressFactor: chunks to break into
     let minutes = Math.floor(time / 60);
-    let seconds = time - (time / 60) * 60; // breaks out just the seconds
+    let seconds = time % 60; // breaks out just the seconds
     let interval = Math.floor(seconds / compressFactor);
+    let final: number = (minutes * 60) + (interval * compressFactor);
 
-    return (minutes * 60) + (interval * compressFactor);
+    return final;
 }
 
-function adjustTimeLabels(data:any, compressFactor:number):StringMap<number>{
+function adjustTimeLabels(data: StringMap<number>, compressFactor: number): StringMap<number>{
 
     let adjusted = {};
     for (let key in data){
@@ -82,7 +101,7 @@ function adjustTimeLabels(data:any, compressFactor:number):StringMap<number>{
 
 }
 
-function factorOf60(n:number):number{
+function factorOf60(n: number): number{
     let factors = [1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 30, 60];
     let remainder = 60 % n;
 
@@ -90,18 +109,18 @@ function factorOf60(n:number):number{
         return n;
     }
 
-    let difference:number[];
+    let difference: number[];
 
     for (let i = 0; i < 13; i++){
         difference[i] = Math.abs(factors[i] - n);
     }
 
-    let index = Math.min(...difference);
+    let index = Math.min(...difference); // FIX THIS
     return factors[index];
 
 }
 
-function fixSeconds(n:number):string{
+function fixSeconds(n: number): string{
     if (n < 10){
         return "0" + n;
     }

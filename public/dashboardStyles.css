@@ -8,29 +8,8 @@ body {
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    width: 85%;
+    width: 95%;
     
-}
-
-.track {
-    width: 300px;
-    height: 300px;
-    text-align: center;
-    color: black;
-    font-size: 16px;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-    border: 2px, lightgrey;
-    padding: 10px;
-
-}
-
-table, th, td {
-    border: none;
-    
-}
-
-#artistFreqBarGraph {
-    width: 300px;
 }
 
 .barGraphData {
@@ -54,9 +33,17 @@ table, th, td {
     white-space: nowrap;
     height: 50px;
     width: 50px;
+    line-height: 35px;
     text-overflow: ellipsis;
     overflow: hidden;
     text-align: center;
+}
+
+.bar {
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: center;
+    padding: 2px;
 }
 
 .barGraph {
@@ -71,4 +58,30 @@ table, th, td {
 
 .barGraphTitle {
     text-align: center;
+}
+
+.barGraphBody {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+
+}
+
+.yLabel {
+    writing-mode: vertical-rl;
+    float: left;
+    text-align: center;
+    white-space: nowrap;
+    align-items: center;
+    padding: 5px;
+    
+}
+
+.xLabel {
+    width: 100%;
+    text-align: center;
+}
+
+.xLabel, .yLabel {
+    font-size: 14px;
 }

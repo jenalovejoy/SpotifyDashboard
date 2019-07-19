@@ -4,7 +4,6 @@ export interface BarElement {
     value: number;
     unit?: string;
 
-    width: number;
     height: number;
     color?: string;
 }
