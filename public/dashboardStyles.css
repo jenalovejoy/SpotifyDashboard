@@ -1,8 +1,21 @@
+/* Primary page styles */
 body {
     display: flex;
     justify-content: center;
     flex-direction: column;
 }
+
+#container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    width: 95%;
+    
+}
+
+/* Top of page details */
 
 #header {
     display: flex;
@@ -28,14 +41,28 @@ body {
     text-align: center;
 }
 
-#container {
+/* Bar Graph Control */
+
+.barGraph {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #e4e9f2;
+    width: 500px;
+    background-color: white;
+    padding: 10px;
+    margin: 10px;
+}
+
+.barGraphTitle {
+    text-align: center;
+    padding: 5px;
+}
+
+.barGraphBody {
     display: flex;
     flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    width: 95%;
-    
+    justify-content: space-around;
+
 }
 
 .barGraphData {
@@ -51,6 +78,13 @@ body {
     flex-direction: column;
 }
 
+.bar {
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: center;
+    padding: 2px;
+}
+
 .label {
     writing-mode: vertical-rl;
     flex-direction: column;
@@ -62,34 +96,6 @@ body {
     overflow: hidden;
     text-align: left;
     margin: auto;
-}
-
-.bar {
-    color: white;
-    font-family: Arial, Helvetica, sans-serif;
-    text-align: center;
-    padding: 2px;
-}
-
-.barGraph {
-    display: flex;
-    flex-direction: column;
-    border: 1px solid #e4e9f2;
-    width: 500px;
-    background-color: white;
-    padding: 10px;
-    margin: 10px;
-}
-
-.barGraphTitle {
-    text-align: center;
-}
-
-.barGraphBody {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-
 }
 
 .yLabel {
@@ -110,6 +116,8 @@ body {
 .xLabel, .yLabel {
     font-size: 14px;
 }
+
+/* Statistic Summary Control */
 
 .statsSummary {
     display: flex;

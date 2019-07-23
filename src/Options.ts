@@ -1,3 +1,4 @@
+/* Aggregates options for presenting data components */
 
 export interface Options {
 

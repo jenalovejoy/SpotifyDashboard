@@ -1,12 +1,14 @@
+/* Constructs the dashboard, calling on Api, Calculate, and Control to find, organize, and present data */
+
 import * as Api from "./Api";
 import * as Controls from "./Controls";
 import * as Calculate from "./Calculate"
 import {Options} from "./Options";
 
 type StringMap<T> = {[key: string]: T};
-const mainContainer = "#container";
+const mainContainer = "#container"; // the primary page container for control to be appended to
 
-// color schemes
+// Color schemes for graphs
 const basicRainbow = ["red", "orange", "yellow", "green", "blue", "purple"];
 const purples = ["#4A148C", "#7B1FA2", "#9C27B0", "#AB47BC", "#CE93D8", "#E1BEE7"];
 const turquoise = ["#1693A5","#45B5C4","#7ECECA","#A0DED6","#C7EDE8"];
@@ -14,19 +16,22 @@ const greens = ["#79bb8c", "#539156", "#61b876", "#90d7bc", "#60b59d"]
 
 $(document).ready(async(): Promise<any> => {
 
-    Api.getToken();
-    Api.getSelectedPlaylist();
-    let allTrackData = await Api.getPlaylistTracks();
+    Api.getToken(); // find authorization token
+    Api.getSelectedPlaylist(); // find playlist selected from prior page
+    let allTrackData = await Api.getPlaylistTracks(); // retrieve all tracks from given playlist
 
     // Get all data for a particular playlist
-    const allPlaylistData = await Api.getPlaylist();
+    const allPlaylistData = await Api.getPlaylist(); // retrieve all selected playlist data
 
+    // Select header information
     const playlistName = allPlaylistData.name;
     const playlistDescription = allPlaylistData.description;
 
     Controls.postHeader("#header", playlistName, playlistDescription);
 
-    // Defines graph preferences
+    /* Format is as follows -> determine options, arrange/transform data, render graph with options and formatted data */
+
+    // Artist occurrences within playlist - bar graph
     let artistFreqOptions: Options = {
         "title":"Artist Frequency", 
         "name":"ArtistFreq", 
@@ -43,6 +48,7 @@ $(document).ready(async(): Promise<any> => {
     // Processes data for frequency of an artist within a playlist
     let artistFreq = Calculate.findArtistFrequency(allTrackData);
 
+    // Distribution of song duration - bar graph
     let songDurationOptions: Options = {
         "title": "Song Durations", 
         "name": "SongDur", 
@@ -55,11 +61,11 @@ $(document).ready(async(): Promise<any> => {
         "sortValue": false
     };
 
-    let songDuration10 = Calculate.findSongDurationFrequency(allTrackData, 10);
-    let songDuration5 = Calculate.findSongDurationFrequency(allTrackData, 5);
-    let songDuration3 = Calculate.findSongDurationFrequency(allTrackData, 3);
+    let songDuration10 = Calculate.findSongDurationFrequency(allTrackData, 10); // compress song durations into buckets of 10-second intervals
+    let songDuration5 = Calculate.findSongDurationFrequency(allTrackData, 5);   //                                          5 second intervals
+    let songDuration3 = Calculate.findSongDurationFrequency(allTrackData, 3);   //                                          3 second intervals
 
-    Controls.makeBarGraph(mainContainer, artistFreq, artistFreqOptions); // renders graph
+    Controls.makeBarGraph(mainContainer, artistFreq, artistFreqOptions); 
     
     songDurationOptions["name"] = "SongDur10";
     Controls.makeBarGraph(mainContainer, songDuration10, songDurationOptions);
@@ -73,6 +79,7 @@ $(document).ready(async(): Promise<any> => {
     songDurationOptions.width = 1500;
     Controls.makeBarGraph(mainContainer, songDuration3, songDurationOptions);
 
+    // Statistical summary of all song durations
     let songDurationStatsOptions: Options = {
         "title": "Song Durations", 
         "name": "SongDur", 
@@ -87,6 +94,7 @@ $(document).ready(async(): Promise<any> => {
     let songDurations = Calculate.findSongDuration(allTrackData);
     Controls.makeStatsSummary(mainContainer, songDurations, songDurationStatsOptions)
 
+    // Number of artists on a given track - bar graph
     let numArtistOptions: Options = {
         "title": "Number of Artists on One Track", 
         "name": "numArtists", 
@@ -94,7 +102,7 @@ $(document).ready(async(): Promise<any> => {
         "xAxis": "# artists",
         "yAxis": "Number of Songs",
         "width": 500, 
-        "height": 300, 
+        "height": 400, 
         "color": greens, 
         "sortValue": false
     }
