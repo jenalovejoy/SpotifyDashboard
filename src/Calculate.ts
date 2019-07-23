@@ -1,4 +1,7 @@
+import { StatsSummary } from "./Stats";
+
 type StringMap<T> = {[key: string]: T};
+type NumberMap<T> = {[key: number]: T};
 
 const MS_IN_MIN = 60000;
 const MS_IN_SEC = 1000;
@@ -42,25 +45,62 @@ export function findNumArtistsPerTrackFrequency(allTrackData: any): StringMap<nu
     return numberArtistsFreq;
 }
 
+export function findSongDuration(allTrackData: any[]): number[] {
+
+    let songDuration: number[] = [];
+
+    allTrackData.forEach(trackData => {
+        let d: number = trackData.track.duration_ms;
+        let durationSeconds = (d / MS_IN_SEC);
+
+        songDuration.push(durationSeconds);
+    })
+
+    return songDuration;
+}
+
+function compressSongDuration(durations: number[], compressFactor: number): number[]{
+
+    let compressedDuration: number[] = [];
+
+    for (let k of durations){
+        let durationSeconds: number = k;
+        durationSeconds = compressTimes(durationSeconds, compressFactor);
+        compressedDuration.push(durationSeconds);
+    }
+
+    return compressedDuration;
+
+}
+
 export function findSongDurationFrequency(allTrackData: any, compressFactor: number): StringMap<number>{
 
-    let songDuration = {};
-    let size = allTrackData.length;
+    let songDurationRaw = findSongDuration(allTrackData);
+    let songDurationCompressed = compressSongDuration(songDurationRaw, compressFactor);
+    let rawDurationMap: NumberMap<number> = buildFrequency(songDurationCompressed);
+    let songDurationsFormatted: StringMap<number> = {};
 
-    for (let i = 0; i < size; i++){
-        let d: number= allTrackData[i].track.duration_ms;
-        let durationSeconds = (d / MS_IN_SEC);
-        durationSeconds = compressTimes(durationSeconds, compressFactor);
-
-        if (!(durationSeconds in songDuration)){
-            songDuration[durationSeconds] = 1;
-        } else {
-            let count = songDuration[durationSeconds] + 1;
-            songDuration[durationSeconds] = count;
-        }
-    
+    for (let rawDuration in rawDurationMap){
+        let stringDuration = adjustTimeLabelRange(parseInt(rawDuration), compressFactor);
+        songDurationsFormatted[stringDuration] = rawDurationMap[rawDuration];
     }
-    return adjustTimeLabels(songDuration, compressFactor);
+    
+    return songDurationsFormatted;
+}
+
+function buildFrequency(data: any[]): {} {
+
+    let map = {}
+    for (let d of data){
+        if (!(d in map)){
+            map[d] = 1;
+        } else {
+            let count = map[d];
+            map[d] = count + 1;
+        }
+    }
+
+    return map;
 }
 
 function compressTimes(time: number, compressFactor: number): number{ 
@@ -77,28 +117,7 @@ function compressTimes(time: number, compressFactor: number): number{
     return final;
 }
 
-function adjustTimeLabels(data: StringMap<number>, compressFactor: number): StringMap<number>{
 
-    let adjusted = {};
-    for (let key in data){
-        let seconds = parseInt(key);
-        let startMinutes = Math.floor(seconds / 60);
-        let startSeconds = seconds % 60;
-
-        let endMinutes = startMinutes;
-        let endSeconds = startSeconds + compressFactor;
-
-        if (endSeconds > 60){
-            endMinutes += 1;
-            endSeconds = 0;
-        }
-
-        adjusted[`${startMinutes}:${fixSeconds(startSeconds)}-${endMinutes}:${fixSeconds(endSeconds)}`] = data[key];
-    }
-
-    return adjusted;
-
-}
 
 function factorOf60(n: number): number{
     let factors = [1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 30, 60];
@@ -117,6 +136,37 @@ function factorOf60(n: number): number{
     let index = Math.min(...difference); // FIX THIS
     return factors[index];
 
+}
+
+function adjustTimeLabelRange(seconds: number, compressFactor: number): string{
+
+    let startMinutes = Math.floor(seconds / 60);
+    let startSeconds = seconds % 60;
+
+    let endMinutes = startMinutes;
+    let endSeconds = startSeconds + compressFactor;
+
+    if (endSeconds > 60){
+        endMinutes += 1;
+        endSeconds = 0;
+    }
+
+    return `${startMinutes}:${fixSeconds(startSeconds)}-${endMinutes}:${fixSeconds(endSeconds)}`;
+}
+
+export function adjustTimeUnitsMap(map: {}): {}{
+
+    for (let label in map){
+        let time = map[label];
+        let minutes = Math.floor(time / 60);
+        let rawSeconds = time % 60;
+
+        let seconds = parseInt(rawSeconds.toFixed(2));
+
+        map[label] = `${minutes}:${fixSeconds(seconds)}`;
+    }
+    
+    return map;
 }
 
 function fixSeconds(n: number): string{

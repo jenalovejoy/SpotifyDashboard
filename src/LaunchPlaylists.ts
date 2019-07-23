@@ -1,16 +1,16 @@
 import * as Api from "./Api";
 
 
-$(document).ready(async() => {
+$(document).ready(async(): Promise<any> => {
 
     Api.getToken();
     
     const allPlaylistData = await Api.getPlaylistIDs();
 
-    for (let i = 0; i < allPlaylistData.items.length; i++){
+    for (let i = 0; i < allPlaylistData.length; i++){
 
-        let playlistName = allPlaylistData.items[i].name;
-        let playlistID = allPlaylistData.items[i].id;
+        let playlistName = allPlaylistData[i].name;
+        let playlistID = allPlaylistData[i].id;
         let playlistImageURL = await Api.getPlaylistImage(playlistID);
         let playlistCard = `<div class="playlistCard">
                             <a href=\"./playlistDash/${playlistID}\">

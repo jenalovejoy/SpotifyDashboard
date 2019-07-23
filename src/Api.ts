@@ -8,11 +8,10 @@ export function getToken(): void{
     var accessTokenFormat = new RegExp("access_token=([^&]*)")
     if (window.location.hash !== ""){
         accessToken = accessTokenFormat.exec(window.location.hash)[1];
-        document.cookie = `access_token=${accessToken}`;
+        window.localStorage.setItem("accessToken", accessToken);
         
     } else {
-        let cookie = document.cookie;
-        accessToken = accessTokenFormat.exec(cookie)[1];
+        accessToken = window.localStorage.getItem("accessToken");
     }
 
 }
@@ -38,10 +37,24 @@ export async function makeCall(url: string): Promise<any> {
 }
 
 export async function getPlaylistIDs(): Promise<any> {
-    return await makeCall(myPlaylistsURL);
+    let startUrl = myPlaylistsURL; 
+
+    let data = await makeCall(startUrl);
+    let playlists = data.items;
+    let nextPage = data.next;
+    let count = data.items.length;
+
+    while(nextPage && count < 60) {
+        let url = getPlaylistURL(nextPage);
+        data = await makeCall(url);
+        playlists = playlists.concat(data.items);
+        nextPage = data.next;
+        count = playlists.length;
+    }
+    return playlists;
 }
 
-export async function getPlaylistImage(playlistID:string): Promise<any>{
+export async function getPlaylistImage(playlistID: string): Promise<any>{
     let url = playlistsURL + playlistID + '/images';
     let data =  await makeCall(url)
     return data[0] && data[0].url;
@@ -59,7 +72,7 @@ export async function getPlaylistTracks(): Promise<any> {
     let tracks = data.items;
     let nextPage = data.next;
     while(nextPage) {
-        let url = startUrl + getURL(nextPage);
+        let url = startUrl + getTracksURL(nextPage);
         data = await makeCall(url);
         tracks = tracks.concat(data.items);
         nextPage = data.next;
@@ -67,7 +80,13 @@ export async function getPlaylistTracks(): Promise<any> {
     return tracks;
 }
 
-function getURL(intialURL: string): string{
+function getPlaylistURL(intialURL: string): string{
+    var urlFormat = new RegExp("com/(.*)");
+    return urlFormat.exec(intialURL)[1]
+
+}
+
+function getTracksURL(intialURL: string): string{
     var urlFormat = new RegExp("/tracks(.*)");
     return urlFormat.exec(intialURL)[1]
 

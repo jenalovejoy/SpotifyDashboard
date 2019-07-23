@@ -4,6 +4,7 @@ import * as Calculate from "./Calculate"
 import {Options} from "./Options";
 
 type StringMap<T> = {[key: string]: T};
+const mainContainer = "#container";
 
 // color schemes
 const basicRainbow = ["red", "orange", "yellow", "green", "blue", "purple"];
@@ -58,19 +59,33 @@ $(document).ready(async(): Promise<any> => {
     let songDuration5 = Calculate.findSongDurationFrequency(allTrackData, 5);
     let songDuration3 = Calculate.findSongDurationFrequency(allTrackData, 3);
 
-    Controls.makeBarGraph("#container", artistFreq, artistFreqOptions); // renders graph
+    Controls.makeBarGraph(mainContainer, artistFreq, artistFreqOptions); // renders graph
     
     songDurationOptions["name"] = "SongDur10";
-    Controls.makeBarGraph("#container", songDuration10, songDurationOptions);
+    Controls.makeBarGraph(mainContainer, songDuration10, songDurationOptions);
     
     songDurationOptions["name"] = "SongDur5";
     songDurationOptions.xAxis = "Duration (5 sec. intervals)";
-    Controls.makeBarGraph("#container", songDuration5, songDurationOptions);
+    Controls.makeBarGraph(mainContainer, songDuration5, songDurationOptions);
 
     songDurationOptions["name"] = "SongDur3";
     songDurationOptions.xAxis = "Duration (3 sec. intervals)";
-    songDurationOptions.width = 1000;
-    Controls.makeBarGraph("#container", songDuration3, songDurationOptions);
+    songDurationOptions.width = 1500;
+    Controls.makeBarGraph(mainContainer, songDuration3, songDurationOptions);
+
+    let songDurationStatsOptions: Options = {
+        "title": "Song Durations", 
+        "name": "SongDur", 
+        "unit": "songs",
+        "xAxis": "Duration (10 sec. intervals)",
+        "yAxis": "Number of Songs",
+        "width": 200, 
+        "height": 100, 
+        "sortValue": false
+    };
+
+    let songDurations = Calculate.findSongDuration(allTrackData);
+    Controls.makeStatsSummary(mainContainer, songDurations, songDurationStatsOptions)
 
     let numArtistOptions: Options = {
         "title": "Number of Artists on One Track", 
@@ -85,6 +100,6 @@ $(document).ready(async(): Promise<any> => {
     }
 
     let numberArtistsPerTrack = Calculate.findNumArtistsPerTrackFrequency(allTrackData);
-    Controls.makeBarGraph("#container", numberArtistsPerTrack, numArtistOptions);
+    Controls.makeBarGraph(mainContainer, numberArtistsPerTrack, numArtistOptions);
 
 })

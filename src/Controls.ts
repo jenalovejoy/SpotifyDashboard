@@ -1,7 +1,19 @@
-import {Options} from "./Options"
-import {BarElement} from "./BarElement"
+import {Options} from "./Options";
+import * as Calculate from "./Calculate"
+import * as Stats from "./Stats";
 
 type StringMap<T> = {[key: string]: T};
+
+export interface BarElement {
+
+    label: string; 
+    value: number;
+    unit?: string;
+
+    height: number;
+    color?: string;
+}
+
 
 export function postHeader(container: string, title: string, description: string): void{
     let headerDiv = `<div id="title">${title}</div><div id="subtitle">${description}</div>`
@@ -41,7 +53,7 @@ export function makeBarGraph(container: string, data: StringMap<number>, options
 
     $(`#${name}BarGraphBody`).append(barsDiv);
 
-    let barGraphElements = sortElements(convertDataToElements(data, maxBarHeight), options["sortValue"]);
+    let barGraphElements = sortElements(convertDataToBarElements(data, maxBarHeight), options["sortValue"]);
     let itemCount = barGraphElements.length;
 
     if (limit !== undefined){
@@ -64,7 +76,7 @@ export function makeBarGraph(container: string, data: StringMap<number>, options
         let height = element["height"];
 
         let barDiv = `<div class="bar" title="${label} with ${value} ${unit}" style=\"height: ${height}px; background-color:${colors[i%colors.length]}\">${value}</div>`;
-        let labelDiv = `<div class="label" id="${name}Label" title="${label}">${label}</div>`;
+        let labelDiv = `<div class="label" id="${name}Label" title="${label}" style="width:${colWidth - 4}px; line-height:${colWidth - 4}px">${label}</div>`;
         let columnDiv = `<div class="barGraphColumn" id="${name}Column" style="width:${colWidth}px">${barDiv}${labelDiv}</div>`;
         $(`#${name}Data`).append(columnDiv);
     }
@@ -77,7 +89,36 @@ export function makeBarGraph(container: string, data: StringMap<number>, options
     
 }
 
-export function convertDataToElements(data: StringMap<number>, maxBarHeight: number): BarElement[]{
+export function makeStatsSummary(container: string, data: number[], options: Options): void{
+
+    let rawSummaryItems = Stats.getAll(data);
+    let summaryItems = Calculate.adjustTimeUnitsMap(rawSummaryItems);
+
+    let title = options.title;
+    let name = options.name;
+
+    let summaryHeight = options.height;
+    let summaryWidth = options.width;
+
+    let controlDiv = `<div class="statsSummary" id="${name}StatsSummary" style="width: ${summaryWidth}px; height:${summaryHeight}px;"> </div>`;
+    let titleDiv = `<div class="statsTitle" id="${name}Title">${title}</div>`
+    let bodyDiv = `#${name}StatsSummary`;
+
+    $(container).append(controlDiv);
+    $(bodyDiv).append(titleDiv);
+
+    let stat: any;
+    for (stat in summaryItems){
+
+        let labelDiv = `<div class="statsLabel" id="${name}Label">${stat}</div>`;
+        let valueDiv = `<div class="statsValue" id="${name}Value">${summaryItems[stat]}</div>`;
+        let wrapperDiv = `<div class="statsRow" id="${name}Row">${labelDiv}${valueDiv}</div>`;
+        $(bodyDiv).append(wrapperDiv);
+
+    }
+} 
+
+function convertDataToBarElements(data: StringMap<number>, maxBarHeight: number): BarElement[]{
 
     let dataElements = [];
 

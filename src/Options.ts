@@ -10,7 +10,7 @@ export interface Options {
     yAxis?: string;      // Label for y axis
 
     // Display Pref
-    color: string[];
+    color?: string[];
 
     // Dimensions
     width: number;       // Length of x axis in pixels
