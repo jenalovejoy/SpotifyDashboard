@@ -1,4 +1,4 @@
-import { StatsSummary } from "./Stats";
+import { PlaylistTrack } from "./Models/PlaylistTrack";
 
 type StringMap<T> = {[key: string]: T};
 type NumberMap<T> = {[key: number]: T};
@@ -6,96 +6,83 @@ type NumberMap<T> = {[key: number]: T};
 const MS_IN_MIN = 60000;
 const MS_IN_SEC = 1000;
 
-export function findArtistFrequency(allTrackData: any): StringMap<number>{
-    let individualArtistFreq = {}
+export function findArtistFrequency(allTrackData: PlaylistTrack[]): StringMap<number>{
+    const individualArtistFreq = {}
 
-    let size = allTrackData.length;
-
-    for (let i = 0; i < size; i++){
-        for (let a of allTrackData[i].track.artists){
-            let name = a.name;
+    for (const track of allTrackData){
+        for (const artist of track.track.artists){
+            const name = artist.name;
             if (!(name in individualArtistFreq)){
                 individualArtistFreq[name] = 1;
             } else {
-                let count = individualArtistFreq[name] + 1;
-                individualArtistFreq[name] = count;
+                individualArtistFreq[name] += 1;
             }
         }
     }
     return individualArtistFreq;
 }
 
-export function findNumArtistsPerTrackFrequency(allTrackData: any): StringMap<number>{
-    let numberArtistsFreq = {}
+export function findNumArtistsPerTrackFrequency(allTrackData: PlaylistTrack[]): StringMap<number>{
+    const numberArtistsFreq = {}
 
-    let size = allTrackData.length;
-
-    for (let i = 0; i < size; i++){
+    for (const track of allTrackData){
         let numTrackArtists = 0;
-        for (let a of allTrackData[i].track.artists){
+        for (const artist of track.track.artists){
             numTrackArtists++;
         }
         if (!(numTrackArtists in numberArtistsFreq)){
             numberArtistsFreq[numTrackArtists] = 1;
         } else {
-            let count = numberArtistsFreq[numTrackArtists] + 1;
+            const count = numberArtistsFreq[numTrackArtists] + 1;
             numberArtistsFreq[numTrackArtists] = count;
         }
     }
     return numberArtistsFreq;
 }
 
-export function findSongDuration(allTrackData: any[]): number[] {
+export function findSongPopularityFrequency(allTrackData: PlaylistTrack[]): StringMap<number>{
+    const popularities = findSongPopularity(allTrackData);
+    return buildFrequency(popularities);
+}
 
-    let songDuration: number[] = [];
+export function findSongDuration(allTrackData: PlaylistTrack[]): number[] {
 
-    allTrackData.forEach(trackData => {
-        let d: number = trackData.track.duration_ms;
-        let durationSeconds = (d / MS_IN_SEC);
-
-        songDuration.push(durationSeconds);
-    })
-
-    return songDuration;
+    return allTrackData.map(track => track.track.duration_ms / MS_IN_SEC);
 }
 
 function compressSongDuration(durations: number[], compressFactor: number): number[]{
 
-    let compressedDuration: number[] = [];
-
-    for (let k of durations){
-        let durationSeconds: number = k;
-        durationSeconds = compressTimes(durationSeconds, compressFactor);
-        compressedDuration.push(durationSeconds);
-    }
-
-    return compressedDuration;
+    return durations.map(duration => compressTimes(duration, compressFactor));
 
 }
 
-export function findSongDurationFrequency(allTrackData: any, compressFactor: number): StringMap<number>{
+export function findSongDurationFrequency(allTrackData: PlaylistTrack[], compressFactor: number): StringMap<number>{
 
-    let songDurationRaw = findSongDuration(allTrackData);
-    let songDurationCompressed = compressSongDuration(songDurationRaw, compressFactor);
-    let rawDurationMap: NumberMap<number> = buildFrequency(songDurationCompressed);
-    let songDurationsFormatted: StringMap<number> = {};
+    const songDurationRaw = findSongDuration(allTrackData);
+    const songDurationCompressed = compressSongDuration(songDurationRaw, compressFactor);
+    const rawDurationMap: NumberMap<number> = buildFrequency(songDurationCompressed);
+    const songDurationsFormatted: StringMap<number> = {};
 
-    for (let rawDuration in rawDurationMap){
-        let stringDuration = adjustTimeLabelRange(parseInt(rawDuration), compressFactor);
+    for (const rawDuration in rawDurationMap){
+        const stringDuration = adjustTimeLabelRange(parseInt(rawDuration), compressFactor);
         songDurationsFormatted[stringDuration] = rawDurationMap[rawDuration];
     }
     
     return songDurationsFormatted;
 }
 
+function findSongPopularity(allTrackData: PlaylistTrack[]): string[] {
+    return allTrackData.map(track => fixSingleDigit(track.track.popularity));
+}
+
 function buildFrequency(data: any[]): {} {
 
-    let map = {}
-    for (let d of data){
+    const map = {}
+    for (const d of data){
         if (!(d in map)){
             map[d] = 1;
         } else {
-            let count = map[d];
+            const count = map[d];
             map[d] = count + 1;
         }
     }
@@ -103,45 +90,32 @@ function buildFrequency(data: any[]): {} {
     return map;
 }
 
+/**
+ * Converts a song duration in seconds into intervals of a given length, rounding down
+ * For example, if the compressFactor is 5, 1-4.9 seconds will return 1, 5-9.9 will return 5
+ * @param time how long the song is in seconds
+ * @param compressFactor how long each interval will be
+ */
 function compressTimes(time: number, compressFactor: number): number{ 
 
-    // force factor of 60
-    compressFactor = factorOf60(compressFactor);
-
     // compressFactor: chunks to break into
-    let minutes = Math.floor(time / 60);
-    let seconds = time % 60; // breaks out just the seconds
-    let interval = Math.floor(seconds / compressFactor);
-    let final: number = (minutes * 60) + (interval * compressFactor);
+    const minutes = Math.floor(time / 60);
+    const seconds = time % 60; // breaks out just the seconds
+    const interval = Math.floor(seconds / compressFactor);
+    const final: number = (minutes * 60) + (interval * compressFactor);
 
     return final;
 }
 
-
-
-function factorOf60(n: number): number{
-    let factors = [1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 30, 60];
-    let remainder = 60 % n;
-
-    if (remainder == 0){
-        return n;
-    }
-
-    let difference: number[];
-
-    for (let i = 0; i < 13; i++){
-        difference[i] = Math.abs(factors[i] - n);
-    }
-
-    let index = Math.min(...difference); // FIX THIS
-    return factors[index];
-
-}
-
+/**
+ * Converts a compressed song duration into the more accurate string label with a start and stop time
+ * @param seconds how many seconds are in the song
+ * @param compressFactor the length of the interval
+ */
 function adjustTimeLabelRange(seconds: number, compressFactor: number): string{
 
-    let startMinutes = Math.floor(seconds / 60);
-    let startSeconds = seconds % 60;
+    const startMinutes = Math.floor(seconds / 60);
+    const startSeconds = seconds % 60;
 
     let endMinutes = startMinutes;
     let endSeconds = startSeconds + compressFactor;
@@ -151,25 +125,25 @@ function adjustTimeLabelRange(seconds: number, compressFactor: number): string{
         endSeconds = 0;
     }
 
-    return `${startMinutes}:${fixSeconds(startSeconds)}-${endMinutes}:${fixSeconds(endSeconds)}`;
+    return `${startMinutes}:${fixSingleDigit(startSeconds)}-${endMinutes}:${fixSingleDigit(endSeconds)}`;
 }
 
 export function adjustTimeUnitsMap(map: {}): {}{
 
-    for (let label in map){
-        let time = map[label];
-        let minutes = Math.floor(time / 60);
-        let rawSeconds = time % 60;
+    for (const label in map){
+        const time = map[label];
+        const minutes = Math.floor(time / 60);
+        const rawSeconds = time % 60;
 
-        let seconds = parseInt(rawSeconds.toFixed(2));
+        const seconds = parseInt(rawSeconds.toFixed(2));
 
-        map[label] = `${minutes}:${fixSeconds(seconds)}`;
+        map[label] = `${minutes}:${fixSingleDigit(seconds)}`;
     }
     
     return map;
 }
 
-function fixSeconds(n: number): string{
+function fixSingleDigit(n: number): string{
     if (n < 10){
         return "0" + n;
     }

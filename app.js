@@ -1,32 +1,32 @@
-const express = require('express')
-const app = express()
-const port = 3000
-const my_client_id = "b899eb7824184b0792708dca91668d49"
-const redirect_uri = "http://localhost:" + port + "/callback"
-app.use(express.static('public'))
+const express = require('express');
+const app = express();
+const port = 3000;
+const myClientId = "b899eb7824184b0792708dca91668d49";
+const redirectUri = "http://localhost:" + port + "/callback";
+app.use(express.static('public'));
 
 
 app.get('/login', (req, res) => {
     var scopes = 'user-read-private user-read-email';
     res.redirect('https://accounts.spotify.com/authorize' +
       '?response_type=token' +
-      '&client_id=' + my_client_id +
+      '&client_id=' + myClientId +
       (scopes ? '&scope=' + encodeURIComponent(scopes) : '') +
-      '&redirect_uri=' + encodeURIComponent(redirect_uri));
-    });
+      '&redirect_uri=' + encodeURIComponent(redirectUri));
+});
 
 app.get('/callback', (req, res) => {
-    let code = req.query.code;
-    let path = require('path')
+    const code = req.query.code;
+    const path = require('path');
     res.sendFile('./public/allPlaylists.html', {
         root: '.'
     })
 });
 
 app.get('/playlistDash/:playlistID', (req, res) => {
-    let code = req.query.code;
-    let path = require('path')
-    let playlistID = req.params.playlistID;
+    const code = req.query.code;
+    const path = require('path')
+    const playlistID = req.params.playlistID;
     res.sendFile('./public/dashboard.html', {
         root: '.'
     })

@@ -1,18 +1,23 @@
 /* Given an array of numerical data, calculates basic statistics */
 
+export interface NumberDatum {
+    label: string;
+    data: number;
+}
+
 // Object for aggregating statistical data
-export interface StatsSummary {
-    "Mean": number;
-    "Median": number;
-    "Standard Deviation": number;
+export interface BasicStatsSummary {
+    mean: NumberDatum;
+    median: NumberDatum;
+    stDev: NumberDatum;
 }
 
 // Calculates the mean of all data samples
 export function mean(data: number[]): number {
-    let length = data.length;
+    const length = data.length;
     let sum = 0;
 
-    for (let d of data){
+    for (const d of data){
         sum = sum + d;
     }
 
@@ -21,14 +26,14 @@ export function mean(data: number[]): number {
 
 // Calculates variance of all data samples
 function variance(data: number[]): number {
-    let dataMean = mean(data);
-    let length = data.length;
+    const dataMean = mean(data);
+    const length = data.length;
 
     let sqDiff = 0;     // squared difference
     let sumSqDiff = 0;  // sum of squared differences
 
-    for (let d in data){
-        let difference = parseInt(d) - dataMean;
+    for (const d of data){
+        const difference = d - dataMean;
         sqDiff = difference ** 2;
         sumSqDiff += sqDiff;
     }
@@ -40,16 +45,9 @@ function variance(data: number[]): number {
 export function median(data: number[]): number {
 
     // Sort data ascending
-    data.sort((a, b): number => {
-        if (a < b){
-            return 1;
-        } else if (a > b){
-            return -1;
-        }
-        return 0;
-    });
+    data.sort();
 
-    let length = data.length;
+    const length = data.length;
 
     // Manage limited data cases
     if (length == 0){
@@ -60,7 +58,7 @@ export function median(data: number[]): number {
     }
 
     // Pick the middle value, or the average of the two middle values (in an even-length data set)
-    let i = Math.floor(length / 2);
+    const i = Math.floor(length / 2);
 
     if (length % 2 == 1){
         return data[i];
@@ -75,12 +73,21 @@ export function stdDev(data: number[]): number{
 }
 
 // Returns all statistics in one object
-export function getAll(data: number[]): StatsSummary {
+export function getAll(data: number[]): BasicStatsSummary {
 
     return {
-        "Mean": mean(data),
-        "Median": median(data),
-        "Standard Deviation": stdDev(data)       
+        mean: {
+            label: "Mean",
+            data: parseInt(mean(data).toFixed(2))
+        },
+        median: {
+            label: "Median",
+            data: parseInt(median(data).toFixed(2))
+        },
+        stDev: {
+            label:"Standard Deviation",
+            data: parseInt(stdDev(data).toFixed(2))
+        }
     };
 
 }

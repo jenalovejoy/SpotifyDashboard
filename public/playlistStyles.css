@@ -1,3 +1,44 @@
+/* Top of page details */
+
+header {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    width: 95%;
+    height: 15%;
+    padding: 20px;
+    align-items: center;
+}
+
+#title {
+    font-size: 24px;
+    width: 95%;
+    text-align: center;
+}
+
+#subtitle {
+    font-size: 18px;
+    width: 95%;
+    text-align: center;
+}
+
+/* Error message details */
+
+.errorBody {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: baseline;
+    width: 100%;
+}
+
+.errorText {
+    text-align: center;
+    padding: 5px;
+}
+
+/* Playlist details */
+
 #playlists {
     display: flex;
     flex-direction: row;
@@ -13,13 +54,7 @@
     text-align: center;
     color: white;
     font-size: 20px;
-    border: 2px, lightgrey;
     padding: 10px;
-}
-
-.playlistCard p {
-    left: 50%;
-    top: 50%;
 }
 
 .playlistCard {
@@ -45,10 +80,8 @@
 
 .playlistCard:hover img {
     filter: brightness(25%);
-    
 }
 
 .playlistCard:hover .playlistText {
     display: block;
-
 }
