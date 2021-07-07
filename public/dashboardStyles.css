@@ -1,0 +1,157 @@
+/* Primary page styles */
+body {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+#container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    width: 95%;
+}
+
+/* Top of page details */
+
+header {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    width: 95%;
+    height: 15%;
+    padding: 20px;
+    align-items: center;
+}
+
+#title {
+    font-size: 24px;
+    width: 95%;
+    text-align: center;
+}
+
+#subtitle {
+    font-size: 18px;
+    width: 95%;
+    text-align: center;
+}
+
+/* Error message details */
+
+.errorBody {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: baseline;
+    width: 100%;
+}
+
+.errorText {
+    text-align: center;
+    padding: 5px;
+}
+
+
+/* Bar Graph Control */
+
+.barGraph {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #e4e9f2;
+    width: 500px;
+    background-color: white;
+    padding: 10px;
+    margin: 10px;
+}
+
+.barGraphTitle {
+    text-align: center;
+    padding: 5px;
+}
+
+.barGraphBody {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+
+}
+
+.barGraphData {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: flex-end;
+}
+
+.barGraphColumn {
+    display: flex;
+    flex-direction: column;
+}
+
+.bar {
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: center;
+    padding: 2px;
+}
+
+.barGraph-label {
+    writing-mode: vertical-rl;
+    flex-direction: column;
+    font-size: 8px;
+    padding: 2px;
+    height: 50px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    text-align: left;
+    margin: auto;
+}
+
+.barGraph-yLabel {
+    writing-mode: vertical-rl;
+    float: left;
+    text-align: center;
+    white-space: nowrap;
+    align-items: center;
+    padding: 5px;
+    
+}
+
+.barGraph-xLabel {
+    width: 100%;
+    text-align: center;
+}
+
+.barGraph-xLabel, .barGraph-yLabel {
+    font-size: 14px;
+}
+
+/* Statistic Summary Control */
+
+.statsSummary {
+    display: flex;
+    flex-direction: column;
+    color: black;
+    padding: 20px;
+    border: 1px solid #e4e9f2;
+    align-content: center;
+}
+
+.statsTitle {
+    text-align: center;
+}
+
+.statsRow {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+/* Scatterplot */
+
+.scatterplot {
+    border: 2px solid blue;
+}
